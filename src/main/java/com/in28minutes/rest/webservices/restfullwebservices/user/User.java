@@ -4,6 +4,9 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import org.springframework.validation.annotation.Validated;
 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.Past;
 import javax.validation.constraints.Size;
@@ -11,7 +14,10 @@ import java.util.Date;
 
 @Validated
 @ApiModel(description = "All details about the user")
+@Entity
 public class User {
+    @Id
+    @GeneratedValue
     private Integer id;
     @Size(min=2, message="Name should have atleast 2 characters")
     @ApiModelProperty(notes = "Name should have atleast 2 character ")
@@ -20,6 +26,9 @@ public class User {
     @Past
     @ApiModelProperty(notes = "Birthday should be in the past")
     private Date birthDay;
+
+    public User() {
+    }
 
     public User(Integer id, String name, Date birthDay) {
         this.id = id;
