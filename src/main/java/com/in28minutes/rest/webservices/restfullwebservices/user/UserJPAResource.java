@@ -20,6 +20,8 @@ public class UserJPAResource {
     @Autowired
     private UserRepository userRepository;
     @Autowired
+    private PostRepository postRepository;
+    @Autowired
     private UserDaoService service;
     // GET /users
     // retrieveAllUsers
@@ -51,5 +53,24 @@ public class UserJPAResource {
     @DeleteMapping("/jpa/users/{id}")
     public void deleteUser(@PathVariable int id) {
         userRepository.deleteById(id);
+    }
+
+    @GetMapping("/jpa/users/{id}/posts")
+    public List<Post> retrivedAllPost(@PathVariable Integer id) {
+        Optional<User> userOptional = userRepository.findById(id);
+        if (!userOptional.isPresent())
+            throw new UserNotFoundException("id-" + id);
+        return userOptional.get().getPosts();
+    }
+
+    @PostMapping("/jpa/users/{id}/posts")
+    public ResponseEntity<Object> createPost(@PathVariable Integer id, @RequestBody Post post) {
+        Optional<User> userOptional = userRepository.findById(id);
+        if (!userOptional.isPresent())
+            throw new UserNotFoundException("id-" + id);
+        post.setUser(userOptional.get());
+        postRepository.save(post);
+        URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(post.getId()).toUri();
+        return ResponseEntity.created(uri).build();
     }
 }
